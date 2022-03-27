@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Maestro demo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/w3.css">
+    <link rel="stylesheet" href="css/webconfig.css">
+</head>
+
+<body>
+    <div id="page_main">
+        <div id="page_header" class="header_banner">
+            <div class="header_container row">
+                <div class="logo col-4">
+                    <a href="https://www.avnet.com" title="AVNET"><img src="img/AVNET_logo.png" alt="Avnet" width="100%"
+                            height="auto"></a>
+                </div>
+                <div class="header_text col-8">
+                    Voice UI demo
+                </div>
+            </div>
+        </div>
+        <div id="nav_container" class="row">
+            <header class="header col-12">
+                <nav class="navbar">
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link current">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="wifi.html" class="nav-link">WIFI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="ledcgi.html" class="nav-link">LED</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="sensorPoll.html" class="nav-link">SENSOR</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="about.html" class="nav-link">ABOUT</a>
+                        </li>
+                    </ul>
+                    <div class="hamburger">
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </div>
+                </nav>
+            </header>
+        </div>
+
+        <div class="page_body">
+            <div class="row">
+                <div class="col-12">
+                    <div id="audio-player-container">
+                        <div class="w3-row w3-margin-bottom">
+                            <div class="w3-panel w3-black">
+                                <p>Mp3 Player</p>
+                            </div>
+                        </div>
+                        <div class="w3-row w3-margin-bottom w3-margin-top">
+                            <div id="volume_block" class="w3-col s2 m1 l1">
+                                <span><img src="img/volume.png" width="25px" alt="volume icon"
+                                        style="margin: 0 0 10px 15px;"></span>
+                            </div>
+                            <div id="volume_block" class="w3-col s10 m8 l8">
+                                <input type="range" id="vol_slider" step="20" max="100" value="100"
+                                    onchange="showVal(this.value)">
+                            </div>
+                        </div>
+                        <div class="w3-row">
+                            <div class="w3-col s4 m3 l3">
+                                <div class="w3-padding-small">
+                                    <button class="w3-button w3-xxlarge w3-round-xxlarge w3-border w3-block" id='PREV'
+                                        onclick='controlMp3(this.id)'><img src="img/left.svg" width=40
+                                            alt="volume icon"></button>
+                                </div>
+                            </div>
+                            <div class="w3-col s4 m3 l3">
+                                <div class="w3-padding-small">
+                                    <button class="w3-button w3-xxlarge w3-round-xxlarge w3-border w3-block" id='PLAY'
+                                        onclick='controlMp3(this.id)'><img id="play_img" src="img/play.svg" width=40
+                                            alt="volume icon"></button>
+                                </div>
+                            </div>
+                            <div class="w3-col s4 m3 l3">
+                                <div class="w3-padding-small">
+                                    <button class="w3-button w3-xxlarge w3-round-xxlarge w3-border w3-block" id='NEXT'
+                                        onclick='controlMp3(this.id)'><img src="img/right.svg" width=40
+                                            alt="volume icon"></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w3-row w3-margin-top">
+                            <table class="w3-table w3-round-large w3-bordered w3-border" id="tracklist">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>File name</th>
+                                        <th>Duration</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="usb_warning" class="w3-row w3-margin-top" style="display: none">
+                            <div class="w3-panel w3-red">
+                                <h3>Error!</h3>
+                                <p>Please plug USB thumbdrive with mp3 files.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer row">
+        AVNET
+    </div>
+    <script src="js/jquery.min.js" type="text/javascript"></script>
+    <script src="js/webconfig.js" type="text/javascript"></script>
+    <script src="js/request.js" type="text/javascript"></script>
+    <script type="text/javascript">
+        function showVal(val) {
+            let param = {
+                command: 7,
+                volume: parseInt(val)
+            }
+            make_post_request('mp3.cgi', JSON.stringify(param));
+        }
+
+        function controlMp3(command) {
+            let param = {
+                command: 50
+            }
+            switch (command) {
+                case 'PREV':
+                    param.command = 3;
+                    break;
+                case 'PLAY':
+                    if (status == 1) {
+                        param.command = 6;
+                    } else {
+                        param.command = 0;
+                    }
+                    break;
+                case 'STOP':
+                    param.command = 1;
+                    break;
+                case 'NEXT':
+                    param.command = 2;
+                    break;
+            }
+            console.log(param);
+            make_post_request('mp3.cgi', JSON.stringify(param));
+        }
+        var playlistDisplayed = false;
+        var usbConnected = 0;
+        var status = 0;
+        var prevTrackNum = 0;
+        var myCurrTrack = "";
+        var volume = 0;
+
+        function parse_vars(data) {
+            let object1 = JSON.parse(data);
+            if (object1.usb != usbConnected) {
+                usbConnected = object1.usb;
+                if (usbConnected == 1) {
+                    document.getElementById("usb_warning").style.display = "none";
+                    let myTracklists = object1.tracks;
+                    let track_html = "";
+                    let temp = $('#tracklist tbody tr')
+                    let index = $('#tracklist tbody tr').length;
+                    myTracklists.forEach((track) => {
+                        track_html = `<tr><th scope='row'>${index+1}</th><td>${track}</td><td>5:00</td></tr>`;
+                        index = index + 1;
+                        $('#tracklist tbody').append(track_html);
+                    });
+
+                    if (object1.volume >= 0 && object1.volume <= 100) {
+                        volume = object1.volume;
+                        document.getElementById("vol_slider").value = volume;
+                    }
+                } else {
+                    document.getElementById("usb_warning").style.display = "block";
+                    $("#tracklist tbody tr").remove();
+                }
+            }
+            let currTrack = object1.currTrack;
+            if (volume != object1.volume) {
+                console.log("change volume " + object1.volume);
+                volume = object1.volume;
+                document.getElementById("vol_slider").value = volume;
+            }
+            if (status != object1.status || myCurrTrack != currTrack) {
+                status = object1.status;
+                myCurrTrack = currTrack;
+                if (status == 1) {
+                    document.getElementById("play_img").src = "img/pause.svg";
+                } else {
+                    document.getElementById("play_img").src = "img/play.svg";
+                }
+                if (status == 0) {
+                    document.getElementById("PLAY").classList.remove("w3-green");
+                } else {
+                    document.getElementById("PLAY").classList.add("w3-green");
+                }
+                let trackRows = $('#tracklist tbody tr');
+                if (status != 0) {
+                    /* highlight current track*/
+                    let i = 0;
+                    for (let i = 0; i < trackRows.length; i++) {
+                        if ($(trackRows[i]).find("td:eq(0)").text() == currTrack) {
+
+                            trackRows[prevTrackNum].classList.remove("w3-dark-grey");
+                            prevTrackNum = i;
+                            trackRows[prevTrackNum].classList.add("w3-dark-grey");
+                            break;
+                        }
+                    }
+                } else {
+                    /* unhighlight current track*/
+                    trackRows[prevTrackNum].classList.remove("w3-dark-grey");
+                }
+            }
+        }
+
+        function init() {
+            setInterval(function () {
+                make_request('music.cgi');
+            }, 1000);
+            setInterval(function () {
+                check_voice_cmd('voice.cgi');
+            }, 3000);
+        }
+        window.onload = init;
+    </script>
+</body>
+
+</html>

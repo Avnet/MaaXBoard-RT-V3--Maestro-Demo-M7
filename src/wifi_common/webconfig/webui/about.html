@@ -1,0 +1,82 @@
+<html>
+
+<head>
+    <title>Maestro demo</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/webconfig.css">
+</head>
+
+<body>
+    <div id="page_main">
+        <div id="page_header" class="header_banner">
+            <div class="header_container row">
+                <div class="logo col-4">
+                    <a href="http://www.avnet.com" title="AVNET"><img src="img/AVNET_logo.png" alt="Avnet" width="100%"
+                            height="auto"></a>
+                </div>
+                <div class="header_text col-8">
+                    Voice UI demo
+                </div>
+            </div>
+        </div>
+        <div id="nav_container" class="row">
+            <header class="header col-12">
+                <nav class="navbar">
+                    <ul class="nav-menu">
+                        <li class="nav-item">
+                            <a href="index.html" class="nav-link">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="wifi.html" class="nav-link">WIFI</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="ledcgi.html" class="nav-link">LED</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="sensorPoll.html" class="nav-link">SENSOR</a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="about.html" class="nav-link current">ABOUT</a>
+                        </li>
+                    </ul>
+                    <div class="hamburger">
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                        <span class="bar"></span>
+                    </div>
+                </nav>
+            </header>
+        </div>
+
+        <div class="page_body">
+            <div class="row">
+                <div class="col-6">
+                    <p>This demo features dual-core application on i.MXRT1176 based MaaXBoard. Faster 1GHz M7 core used
+                        for running webserver, slower 400 Mhz M4 core used for polling FXOS IMU, LightRanger sensors
+                        from MikroElectronika.</p>
+                </div>
+                <div class="col-6">
+                    <img src="img/maaxboard.jpg" alt="Maaxboard" width="100%" height="auto">
+                </div>
+            </div>
+        </div>
+
+        <div class="footer row">
+            AVNET
+        </div>
+    </div>
+
+    <script type="text/javascript" src="js/webconfig.js"></script>
+    <script type="text/javascript" src="js/request.js"></script>
+    <script type="text/javascript">
+        function init() {
+            setInterval(function () {
+                check_voice_cmd('voice.cgi');
+            }, 4000);
+        }
+        window.onload = init;
+    </script>
+</body>
+
+</html>
